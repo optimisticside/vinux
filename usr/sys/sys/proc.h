@@ -1,6 +1,13 @@
 #ifndef _SYS_PROC_H_
 #define _SYS_PROC_H_
 
+#include <sys/types.h>
+#include <sys/signal.h>
+#include <sys/time.h>
+
+#include <machine/proc.h>
+#include <machine/cpu.h>
+
 /*
  * Runnable context from the point of view of the kernel.
  * Each thread is part of a process, who may have multiple
@@ -13,6 +20,7 @@ struct thread {
 	int		td_errno;	/* error from syscall */
 	struct proc	td_proc;	/* owning process */
 	struct trapframe *td_frame;	/* saved state upon trap */
+	
 	enum td_states {
 		TDS_INACTIVE = 0,
 		TDS_SLEEPING,
