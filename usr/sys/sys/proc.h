@@ -7,6 +7,9 @@
 
 #include <machine/proc.h>
 #include <machine/cpu.h>
+#include <machine/frame.h>
+
+#include <vm/vm.h>
 
 /*
  * Runnable context from the point of view of the kernel.
@@ -20,7 +23,6 @@ struct thread {
 	int		td_errno;	/* error from syscall */
 	struct proc	td_proc;	/* owning process */
 	struct trapframe *td_frame;	/* saved state upon trap */
-	
 	enum td_states {
 		TDS_INACTIVE = 0,
 		TDS_SLEEPING,
