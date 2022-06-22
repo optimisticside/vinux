@@ -16,11 +16,28 @@
 #define writel(addr, value)	(*(volatile uint32_t *)addr = value)
 #define writeq(addr, value)	(*(volatile uint64_t *)addr = value)
 
+/*
+ * Reads information about the processor through the cpuid instruction.
+ */
 static inline void cpuid(uint32_t leaf, uint32_t subleaf,
 		uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
 	asm volatile ("cpuid"
 		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
 		: "0" (leaf), "c" (subleaf);
+}
+
+/*
+ * Enables interrupts.
+ */
+static inline void enable_irq() {
+	asm volatile ("sti");
+}
+
+/*
+ * Disables interrupts.
+ */
+static inline void disable_irq() {
+	asm volatile ("cli");
 }
 
 /*
@@ -92,20 +109,6 @@ static inline uint64_t rdtsc() {
 	return (low | ((uint64_t)high << 32));
 }
 
-/*
- * Enables interrupts.
- */
-static inline void enable_irq() {
-	asm volatile ("sti");
-}
-
-/*
- * Disables interrupts.
- */
-static inline void disable_irq() {
-	asm volatile ("cli");
-}
-
 static inline uint64_t read_cr0() {
 	uint64_t value;
 
@@ -160,6 +163,20 @@ static inline uint64_t write_cr3(uint64_t value) {
 
 static inline uint64_t write_cr4(uint64_t value) {
 	asm volatile ("movq %0, %%cr4" : : "r" (value));
+}
+
+/*
+ * Global TLB flush.
+ */
+static inline void invltlb() {
+	write_cr3(read_cr3());
+}
+
+/*
+ * TLB flush for an individual page.
+ */
+static inline void invlpg(uint64_t addr) {
+	asm volatile ("invlpg %0" : : "m" (*(char *)addr));
 }
 
 #endif /* !_MACHINE_CPUFUNC_H_ */
