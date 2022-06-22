@@ -1,6 +1,8 @@
 #ifndef _MACHINE_CPUFUNC_H_
 #define _MACHINE_CPUFUNC_H_
 
+#include <machine/types.h>
+
 /*
  * Memory-mapped I/O related routines.
  */
@@ -13,6 +15,39 @@
 #define writew(addr, value)	(*(volatile uint16_t *)addr = value)
 #define writel(addr, value)	(*(volatile uint32_t *)addr = value)
 #define writeq(addr, value)	(*(volatile uint64_t *)addr = value)
+
+static inline void cpuid(uint32_t leaf, uint32_t subleaf,
+		uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
+	asm volatile ("cpuid"
+		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+		: "0" (leaf), "c" (subleaf);
+}
+
+/*
+ * Port I/O routines.
+ */
+
+static inline uint8_t inb(uint32_t port) {
+	uint8_t data;
+
+	asm volatile ("inb %w1, %0" : "=a" (data) : "Nd" (port));
+	return data;
+}
+
+static inline uint16_t inw(uint32_t port) {
+	uint16_t data;
+
+	asm volatile ("inw %w1, %0" : "=a" (data) : "Nd" (port));
+	return data;
+}
+
+static inline uint32_t inl(uint32_t port) {
+	uint32_t data;
+
+	asm volatile ("inl %w1, %0" : "=a" (data) : "Nd" (port));
+	return data;
+}
+
 
 static inline void outb(uint32_t port, uint8_t data) {
 	asm volatile ("outb %0, %w1" : : "a" (data), "Nd" (port));
@@ -45,6 +80,30 @@ static inline void wrmsr(uint32_t msr, uint64_t data) {
 	low = data;
 	high = data >> 32;
 	asm volatile ("wrmsr" : : "a" (low), "d" (high), "c" (msr));
+}
+
+/*
+ * Reads from the timestamp counter.
+ */
+static inline uint64_t rdtsc() {
+	uint32_t low, high;
+
+	asm volatile ("rdtsc" : "=a" (low), "=d" (high));
+	return (low | ((uint64_t)high << 32));
+}
+
+/*
+ * Enables interrupts.
+ */
+static inline void enable_irq() {
+	asm volatile ("sti");
+}
+
+/*
+ * Disables interrupts.
+ */
+static inline void disable_irq() {
+	asm volatile ("cli");
 }
 
 #endif /* !_MACHINE_CPUFUNC_H_ */

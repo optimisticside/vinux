@@ -5,6 +5,7 @@
 #include <sys/signal.h>
 #include <sys/time.h>
 
+#include <machine/types.h>
 #include <machine/proc.h>
 #include <machine/cpu.h>
 #include <machine/frame.h>
@@ -22,6 +23,7 @@ struct thread {
 	int		td_cpu;		/* cpu running thread */
 	int		td_errno;	/* error from syscall */
 	struct proc	td_proc;	/* owning process */
+	struct mcthread	td_mach;	/* machine-dependent data */
 	struct trapframe *td_frame;	/* saved state upon trap */
 	enum td_states {
 		TDS_INACTIVE = 0,
@@ -37,6 +39,7 @@ struct thread {
 struct proc {
 	pid_t		p_pid;		/* unique identifier */
 	int		p_exit;		/* exit code */
+	struct mcproc	p_mach;		/* machine-dependent data */
 	struct tty	*p_ctty;	/* controlling terminal */
 	struct vmspace	*p_vmspace;	/* address map */
 	struct inode	*p_cwd;		/* current working directory */
