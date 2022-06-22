@@ -106,4 +106,60 @@ static inline void disable_irq() {
 	asm volatile ("cli");
 }
 
+static inline uint64_t read_cr0() {
+	uint64_t value;
+
+	asm volatile ("movq %%cr0, %0" : "=r" (value));
+	return value;
+}
+
+static inline uint64_t read_cr1() {
+	uint64_t value;
+
+	asm volatile ("movq %%cr1, %0" : "=r" (value));
+	return value;
+}
+
+static inline uint64_t read_cr2() {
+	uint64_t value;
+
+	asm volatile ("movq %%cr2, %0" : "=r" (value));
+	return value;
+}
+
+static inline uint64_t read_cr3() {
+	uint64_t value;
+
+	asm volatile ("movq %%cr3, %0" : "=r" (value));
+	return value;
+}
+
+static inline uint64_t read_cr4() {
+	uint64_t value;
+
+	asm volatile ("movq %%cr4, %0" : "=r" (value));
+	return value;
+}
+
+static inline uint64_t write_cr0(uint64_t value) {
+	asm volatile ("movq %0, %%cr0" : : "r" (value));
+}
+
+static inline uint64_t write_cr1(uint64_t value) {
+	asm volatile ("movq %0, %%cr1" : : "r" (value));
+}
+
+
+static inline uint64_t write_cr2(uint64_t value) {
+	asm volatile ("movq %0, %%cr2" : : "r" (value));
+}
+
+static inline uint64_t write_cr3(uint64_t value) {
+	asm volatile ("movq %0, %%cr3" : : "r" (value));
+}
+
+static inline uint64_t write_cr4(uint64_t value) {
+	asm volatile ("movq %0, %%cr4" : : "r" (value));
+}
+
 #endif /* !_MACHINE_CPUFUNC_H_ */
