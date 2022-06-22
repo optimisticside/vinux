@@ -6,6 +6,7 @@
  * the processor status long (rflags).
  */
 #define FL_CARRY	0x0001		/* carry flag */
+#define	FL_RESERVED	0x0002		/* reserved flag (always set) */
 #define FL_PARITY	0x0008		/* parity flag */
 #define FL_ADJUST	0x0010		/* adjust flag */
 #define FL_ZERO		0x0040		/* zero flag */
@@ -22,5 +23,12 @@
 #define FL_ALIGNCHK	0x00040000	/* alignment check flag */
 #define FL_VIRTINT	0x00080000	/* virtual interrupt flag */
 #define FL_VIRTINTPEND	0x00100000	/* virtual interrupt pending flag */
+
+/*
+ * We can rely on the fact that interrupts are disabled when in
+ * usermode to determine what mode were we were in upon a trap.
+ */
+#define FL_KERNEL	FL_RESERVED
+#define FL_USER		(FL_RESERVED | FL_INTENA)
 
 #endif /* !_MACHINE_FLAGS_H_ */
