@@ -7,7 +7,8 @@
  */
 #define T_PRIVINS	1	/* privilated instruction */
 #define T_BREAKPOINT	3	/* breakpoint instruction */
-#define T_ARITHTRAP	6	/* arithmatic trap */
+#define T_ARITH		6	/* arithmatic trap */
+#define T_TRACE		10	/* debuc exception */
 #define T_PAGE		12	/* page fault */
 #define T_ALIGN		14	/* alignment fault */
 

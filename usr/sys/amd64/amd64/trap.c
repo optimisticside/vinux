@@ -39,5 +39,39 @@ int trap(struct trapframe *frame) {
 
 	if (TF_USERMODE(frame)) {
 		td->td_frame = frame;
+
+		switch (type) {
+		case T_PRIVINS:
+			signo = SIGILL;
+			break;
+
+		case T_BREAKPOINT:
+		case T_TRACE:
+			signo = SIGTRAP;
+			break;
+
+		/*
+		 * Leave these cases here even though they do the same thing as
+		 * the default case, because we will want to provide more info
+		 * to the user through siginfo_t.
+		 */
+		case T_GENPROT:
+		case T_STACK:
+		case T_SEGNPRES:
+		case T_TSS:
+		case T_ALIGN:
+		case T_DOUBLE:
+		default:
+			signo = SIGBUS;
+			break;
+
+		case T_ARITH:
+		case T_DIVIDE:
+		case T_OFLOW:
+		case T_BOUND:
+		case T_XMM:
+			signo = SIGFPE;
+			break;
+		}
 	}
 }
