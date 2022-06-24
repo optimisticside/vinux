@@ -18,13 +18,18 @@
  * threads.
  */
 struct thread {
-	tid_t		td_tid;		/* unique identifier */
-	void		*td_wchan;	/* waiting channel */
-	int		td_cpu;		/* cpu running thread */
-	int		td_errno;	/* error from syscall */
+	tid_t	td_tid;			/* unique identifier */
+	void	*td_wchan;		/* waiting channel */
+	int	td_cpu;			/* cpu running thread */
+	int	td_errno;		/* error from syscall */
+	QUEUE_ENTRY(struct thread) td_plist; /* list of threads in proc */
+	QUEUE_ENTRY(struct thread) td_runq; /* run-queue entry */
+	QUEUE_ENTRY(struct thread) td_slpq; /* sleep-queue entry */
 	struct proc	td_proc;	/* owning process */
+	struct sigque	td_sigq;	/* signal queue */
 	struct mcthread	td_mach;	/* machine-dependent data */
 	struct trapframe *td_frame;	/* saved state upon trap */
+	struct sigqueue	td_sigq;	/* signal queue */
 	enum td_states {
 		TDS_INACTIVE = 0,
 		TDS_SLEEPING,
@@ -37,14 +42,16 @@ struct thread {
  * Process structure.
  */
 struct proc {
-	pid_t		p_pid;		/* unique identifier */
-	int		p_exit;		/* exit code */
-	struct mcproc	p_mach;		/* machine-dependent data */
-	struct tty	*p_ctty;	/* controlling terminal */
-	struct vmspace	*p_vmspace;	/* address map */
-	struct inode	*p_cwd;		/* current working directory */
-	struct proc	*p_pptr;	/* pointer to parent process */
-	struct ofile	ofile[NOFILE];	/* open files */
+	pid_t	p_pid;			/* unique identifier */
+	int	p_exit;			/* exit code */
+	struct mcproc p_mach;		/* machine-dependent data */
+	struct sigqueue p_sigq;		/* signal queue */
+	struct sigacts *p_sigacts;	/* signal actions */
+	struct tty *p_ctty;		/* controlling terminal */
+	struct vmspace *p_vmspace;	/* address map */
+	struct inode *p_cwd;		/* current working directory */
+	struct proc *p_pptr;		/* pointer to parent process */
+	struct filedesc	ofile[NOFILE];	/* open files */
 };
 
 #endif /* !_SYS_PROC_H_ */
