@@ -1,31 +1,44 @@
 #include <sys/types.h>
+#include <sys/assert.h>
 #include <sys/proc.h>
 
 /*
- * Remove a process from its sleep queue.
+ * Change current thread state to runnable, placing it in run-queue if it is
+ * in memory.
+ *
+ * Requries the thread lock on entry, drops upon exit.
  */
-void unsleep(struct proc *p) {
-	struct slpque *slpq;
+int setrunnable(struct thread *td) {
+	ASSERT(td->td_proc->p_state == PRS_ZOMBIE,
+		("setrunnable: %d is a zombie", td->td_proc->p_pid));
 
-	if (p->p_wchan != NULL) {
-		slpq = &slpque[LOOKUP(wchan)];
-		QUEUE_REMOVE(slpq->sq_head, p);
-		p->p_wchan = NULL;
+	switch (td->td_state) {
+	case TDS_RUNNING:
+	case TDS_ENQUEUED:
+			break;
+	case TDS_READY:
+			sched_wakeup(td);
+			return 0;
+	default:
+		panic("setrunnable: invalid state %d", td->td_state);
 	}
 }
 
 /*
- * Make all processes sleeping on the specified wakeup-channel runnable.
+ * Make all threads sleeping on the specified wakeup-channel runnable.
  */
 void wakeup(void *wchan) {
-	struct slpque *slpq;
-	struct proc *p, **q;
+	
+}
 
-	slpq = &slpque[LOOKUP(wchan)];
-	QUEUE_FOREACH(slpq->sq_head, p) {
-		if (p->p_wchan == wchan) {
-			p->p_wchan = NULL;
-			unsleep(p);
-		}
-	}
+/*
+ * Suspend current thread until wakeup occurs on specified identifier. Once
+ * awakened, the thread will be scheduled to run with the specified priority.
+ */
+int sleep(void *wchan, struct lock_object *lock, int priority, int flags) {
+	struct thread *td;
+
+	td = curthread;
+	sleepq_lock(wchan);
+	if (flags & )
 }
