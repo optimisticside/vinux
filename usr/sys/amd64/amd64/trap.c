@@ -12,10 +12,11 @@
  * interrupts like page faults.
  */
 int trap(struct trapframe *frame) {
+	struct ksiginfo *ksi;
 	struct thread *td;
 	struct proc *p;
 	uint32_t type;
-	int signo;
+	int signo, ucode;
 
 	td = curthread;
 	p = td->td_proc;
@@ -33,7 +34,7 @@ int trap(struct trapframe *frame) {
 			 * a spinlock.
 			 */
 			if (td->td_mach->mc_nspinlock == 0)
-				enable_irq();
+				enable_intr();
 		}
 	}
 
@@ -43,34 +44,51 @@ int trap(struct trapframe *frame) {
 		switch (type) {
 		case T_PRIVINS:
 			signo = SIGILL;
+			ucode = ILL_PRVOPC;
 			break;
 
 		case T_BREAKPOINT:
-		case T_TRACE:
 			signo = SIGTRAP;
+			ucode = TRAP_BRKPT;
 			break;
 
-		/*
-		 * Leave these cases here even though they do the same thing as
-		 * the default case, because we will want to provide more info
-		 * to the user through siginfo_t.
-		 */
-		case T_GENPROT:
+		case T_TRACE:
+			signo = SIGTRAP;
+			ucode = TRAP_TRACE;
+			break;
+
 		case T_STACK:
 		case T_SEGNPRES:
-		case T_TSS:
+			signo = SIGBUS;
+			ucode = BUS_ADDRERR;
+			break;
+
 		case T_ALIGN:
+			signo = SIGBUS;
+			ucode = BUS_ADRALN;
+			break;
+
+		case T_GENPROT:
+		case T_TSS:
 		case T_DOUBLE:
 		default:
 			signo = SIGBUS;
+			ucode = BUS_OBJERR;
 			break;
 
-		case T_ARITH:
 		case T_DIVIDE:
-		case T_OFLOW:
-		case T_BOUND:
-		case T_XMM:
 			signo = SIGFPE;
+			ucode = FPE_INTDIV;
+			break;
+
+		case T_OFLOW:
+			signo = SIGFPE;
+			ucode = FPE_INTOVF;
+			break;
+
+		case T_BOUND:
+			signo = SIGFPE;
+			ucode = FPE_FLTSUB;
 			break;
 		}
 	}

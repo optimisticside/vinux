@@ -27,17 +27,19 @@ static inline void cpuid(uint32_t leaf, uint32_t subleaf,
 }
 
 /*
- * Enables interrupts.
+ * Interrupt-related routines.
  */
-static inline void enable_irq() {
+
+static inline void intr_enable() {
 	asm volatile ("sti");
 }
 
-/*
- * Disables interrupts.
- */
-static inline void disable_irq() {
+static inline void intr_disable() {
 	asm volatile ("cli");
+}
+
+static inline void intr_restore(register_t value) {
+	asm volatile ("csrs sstatus %0" : : "r" (value));
 }
 
 /*

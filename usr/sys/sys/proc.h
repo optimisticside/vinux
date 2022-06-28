@@ -27,7 +27,7 @@ struct thread {
 	QUEUE_ENTRY(struct thread) td_slpq; /* sleep-queue entry */
 	struct proc	td_proc;	/* owning process */
 	struct sigque	td_sigq;	/* signal queue */
-	struct mcthread	td_mach;	/* machine-dependent data */
+	struct mdthread	td_md;		/* machine-dependent data */
 	struct trapframe *td_frame;	/* saved state upon trap */
 	struct sigqueue	td_sigq;	/* signal queue */
 	enum td_states {
@@ -44,7 +44,7 @@ struct thread {
 struct proc {
 	pid_t	p_pid;			/* unique identifier */
 	int	p_exit;			/* exit code */
-	struct mcproc p_mach;		/* machine-dependent data */
+	struct mdproc p_md;		/* machine-dependent data */
 	struct sigqueue p_sigq;		/* signal queue */
 	struct sigacts *p_sigacts;	/* signal actions */
 	struct tty *p_ctty;		/* controlling terminal */
