@@ -16,7 +16,18 @@ struct sleepqueue {
 static struct sleepqueue_chain {
 	QUEUE_HEAD(struct sleepqueue) sq_head;	/* queue of sleepqueues */
 	struct mtx	sc_mtx;			/* spin lock */
-} sleepq_chains[SLPQC_TBLSIZ];
+} sleepq_chains[NSLEEPQCHAIN];
+
+/*
+ * Initializes all sleep-queues.
+ */
+void sleepq_init() {
+	struct sleepqueue_chain *sc;
+
+	for (sc = &sleepq_chains[0]; sc < &sleepq_chains[NSLEEPQCHAIN], sc++) {
+		/* TODO: Do this */
+	}
+}
 
 /*
  * Locks the sleepqueue-chain associated with the given waiting channel.
