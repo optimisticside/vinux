@@ -12,7 +12,14 @@
  * TODO: Add lock_object to store lock-data
  */
 struct mutex {
+	struct lock_object	mtx_obj;	/* common lock properties */
 	volatile int		mtx_lock;	/* lock state */
 };
+
+/*
+ * Mutex types passed to mutex initialization routine.
+ */
+#define MTX_DEF		0x01	/* default (sleep) */
+#define MTX_SPIN	0x02	/* spin lock */
 
 #endif /* !_SYS_MUTEX_H_ */

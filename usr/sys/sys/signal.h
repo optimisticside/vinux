@@ -10,6 +10,15 @@ struct sigqueue {
 	sigset_t	sq_pend;	/* pending signals */
 };
 
+typedef struct {
+	int	si_signo;		/* signal number */
+	int	si_errno;		/* associated error # */
+	int	si_code;		/* signal code (see below) */
+	pid_t	si_pid;			/* sending process */
+	int	si_status;		/* exit value */
+	void	*si_addr;		/* faulting instruction */
+} siginfo_t;
+
 /*
  * Macro for converting a signal number to a mask.
  */
