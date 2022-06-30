@@ -24,6 +24,23 @@ typedef struct {
  */
 #define SIGMASK(n)	(1 << ((n) - 1))
 
+/*
+ * Signal codes.
+ */
+#define SIGHUP		1	/* hangup */
+#define SIGINT		2	/* interrupt */
+#define SIGQUIT		3	/* quit */
+#define SIGILL		4	/* illegal instruction */
+#define SIGTRAP		5	/* trace trap */
+#define SIGABRT		6	/* abort */
+#define SIGKILL		9	/* kill (cannot be caught/ignored) */
+#define SIGBUS		10	/* bus error */
+#define SIGSEGV		11	/* segmentation violation */
+#define SIGSYS		12	/* non-existent syscall invoked */
+#define SIGPIPE		13	/* wrote to pipe with no reader */
+#define SIGALRM		14	/* alaerm clock */
+#define SIGTERM		15	/* termination signal from kill */
+
 /* codes for SIGILL */
 #define ILL_ILLOPC	1	/* illegal opcode */
 #define ILL_ILLOPN	2	/* illegal operand */
