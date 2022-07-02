@@ -1,28 +1,39 @@
 #include <sys/types.h>
 #include <sys/signal.h>
+#include <sys/list.h>
 #include <sys/proc.h>
 
 /*
- * Finds the thread to send a signal to for when we are only provided a
- * process to send the signal to.
+ * Find the thread to send a signal to for when we are only provided a
+ * process to send the signal to. The priority in finding the thread to send
+ * the signal to is as follows:
+ * 1. The current thread (if not masked)
+ * 2. Any thread that has not masked the signal
+ * 3. The first thread in the process
  */
 static struct thread *findtd(struct proc *p, int mask) {
 	struct thread *td;
 
-	if (curproc == p && (curthread->td_sigmask&mask))
+	if (curproc == p && (curthread->td_sigmask & mask))
 		return curthread;
-	/* TODO: go thru process's thread list and find it */
+	LIST_FOREACH(p->p_threads, td) {
+		if (td->td_sigmask & mask)
+			return td;
+	}
+	return LIST_HEAD(p->p_threads);
 }
 
 /*
  * If the current process has recieved a signal, return the signal number.
+ * Stopping-signals that default to being processed immediately will be
+ * processed and not returned.
  */
 int issignal(struct thread *td) {
 	int signo, pending;
 	struct proc *p;
 
 	p = td->td_proc;
-	/* TODO: Do this */
+	
 }
 
 /*
