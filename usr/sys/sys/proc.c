@@ -28,7 +28,9 @@ int setrunnable(struct thread *td) {
  * Make all threads sleeping on the specified wakeup-channel runnable.
  */
 void wakeup(void *wchan) {
-	
+	sleepq_lock(wchan);
+	sleepq_wakeall(wchan, SLEEPQ_SLEEP);
+	sleepq_unlock(wchan);
 }
 
 /*

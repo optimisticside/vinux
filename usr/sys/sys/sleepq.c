@@ -84,8 +84,21 @@ void sleepq_add(void *wchan, struct lock_object *lock, int flags) {
 }
 
 /*
- * Switches to another thread if the current thread is still asleep in a queue.
- * Returns with thread lock acquired.
+ * Broadcasts a sleep-signal to all threads sleeping on a specific waiting
+ * channel.
+ */
+int sleepq_broadcast(void *wchan, int queue) {
+	struct sleepqueue *sq;
+
+	KASSERT(wchan != NULL, ("%s: invalid NULL waiting channel", __func__));
+	if ((sq = sleepq_lookup(wchan)) == NULL)
+		return 0;
+	return sleepq_remove(sq, queue, match_any	);
+}
+
+/*
+ * Switche to another thread if the current thread is still asleep in a queue.
+ * Return with thread lock acquired.
  */
 void sleepq_switch(void *wchan, int priority) {
 	struct sleepqueue_chain *sc;
