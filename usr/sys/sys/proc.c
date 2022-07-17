@@ -29,7 +29,7 @@ int setrunnable(struct thread *td) {
  */
 void wakeup(void *wchan) {
 	sleepq_lock(wchan);
-	sleepq_wakeall(wchan, SLEEPQ_SLEEP);
+	sleepq_broadcast(wchan, SLEEPQ_SLEEP);
 	sleepq_unlock(wchan);
 }
 

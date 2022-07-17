@@ -84,6 +84,15 @@ void sleepq_add(void *wchan, struct lock_object *lock, int flags) {
 }
 
 /*
+ * Removes all processes from a sleep-queue that match a process-validation
+ * routine.
+ */
+int sleepq_remove(struct sleepqueue *sq, int queue,
+		int (*match)(struct proc *)) {
+
+}
+
+/*
  * Broadcasts a sleep-signal to all threads sleeping on a specific waiting
  * channel.
  */
@@ -93,7 +102,7 @@ int sleepq_broadcast(void *wchan, int queue) {
 	KASSERT(wchan != NULL, ("%s: invalid NULL waiting channel", __func__));
 	if ((sq = sleepq_lookup(wchan)) == NULL)
 		return 0;
-	return sleepq_remove(sq, queue, match_any	);
+	return sleepq_remove(sq, queue, match_any, );
 }
 
 /*
